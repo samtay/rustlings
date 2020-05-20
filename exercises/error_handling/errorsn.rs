@@ -17,8 +17,6 @@
 //
 // Execute `rustlings hint errorsn` for hints :)
 
-// I AM NOT DONE
-
 use std::error;
 use std::fmt;
 use std::io;
@@ -26,7 +24,10 @@ use std::io;
 // PositiveNonzeroInteger is a struct defined below the tests.
 fn read_and_validate(b: &mut dyn io::BufRead) -> Result<PositiveNonzeroInteger, Box<dyn error::Error>> {
     let mut line = String::new();
-    b.read_line(&mut line);
+    // This one is interesting, if the ? below is omitted all but one test pass;
+    // this implies that parse() is able to take Result values and squash the error into an empty
+    // string before parsing. This is a poor design choice IMO.
+    b.read_line(&mut line)?;
     let num: i64 = line.trim().parse()?;
     let answer = PositiveNonzeroInteger::new(num)?;
     Ok(answer)
