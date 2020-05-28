@@ -41,7 +41,7 @@ impl From<&str> for Person {
             if name.is_empty() || age.is_empty() || !pieces.is_empty() {
                 return None;
             }
-            let age = if let Ok(age) = age.parse::<usize>() { Some(age) } else { None }?;
+            let age = age.parse::<usize>().ok()?;
 
             Some(Person {name: name.to_string(), age})
         };

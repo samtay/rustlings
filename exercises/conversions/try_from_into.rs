@@ -11,8 +11,6 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need create implementation for a tuple of three integer,
@@ -22,10 +20,23 @@ struct Color {
 // but slice implementation need check slice length!
 // Also note, that chunk of correct rgb color must be integer in range 0..=255.
 
+fn in_range(rgb : &[u8; 3]) -> bool {
+    rgb.iter().all(|&x| 0 <= x && x <= 255)
+}
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = String;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (red, green, blue) = tuple;
+        match (u8::try_from(red),u8::try_from(green),u8::try_from(blue)) {
+            (Ok(red), Ok(green), Ok(blue)) if in_range(&[red, green, blue])  => {
+                Ok(Color{red, green, blue})
+            }
+            _ => {
+                Err(String::from("Failed to convert"))
+            }
+        }
     }
 }
 
@@ -33,6 +44,8 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [red, green, blue] = arr;
+        Color::try_from((red, green, blue))
     }
 }
 
@@ -40,6 +53,10 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = String;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let rgb : &[i16; 3] = slice
+            .try_into()
+            .map_err::<String,_>(|_| { "Expected three numbers".to_string() })?;
+        Color::try_from(*rgb)
     }
 }
 
